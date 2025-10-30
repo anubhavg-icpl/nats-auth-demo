@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # Basic Authorization Server
+  nats-basic:
+    image: docker.io/library/nats:latest
+    container_name: nats-basic-auth
+    ports:
+      - "4222:4222"
+      - "8222:8222"  # HTTP monitoring
+    volumes:
+      - ./config/basic-auth.conf:/config/nats.conf:ro
+    command: ["-c", "/config/nats.conf"]
+    networks:
+      - nats-network
+
+  # Allow/Deny Server
+  nats-allow-deny:
+    image: docker.io/library/nats:latest
+    container_name: nats-allow-deny
+    ports:
+      - "4223:4223"
+      - "8223:8223"  # HTTP monitoring
+    volumes:
+      - ./config/allow-deny.conf:/config/nats.conf:ro
+    command: ["-c", "/config/nats.conf", "-m", "8223"]
+    networks:
+      - nats-network
+
+  # Allow Responses Server
+  nats-allow-responses:
+    image: docker.io/library/nats:latest
+    container_name: nats-allow-responses
+    ports:
+      - "4224:4224"
+      - "8224:8224"  # HTTP monitoring
+    volumes:
+      - ./config/allow-responses.conf:/config/nats.conf:ro
+    command: ["-c", "/config/nats.conf", "-m", "8224"]
+    networks:
+      - nats-network
+
+  # Queue Permissions Server
+  nats-queue-perms:
+    image: docker.io/library/nats:latest
+    container_name: nats-queue-perms
+    ports:
+      - "4225:4225"
+      - "8225:8225"  # HTTP monitoring
+    volumes:
+      - ./config/queue-permissions.conf:/config/nats.conf:ro
+    command: ["-c", "/config/nats.conf", "-m", "8225"]
+    networks:
+      - nats-network
+
+  # Accounts Server
+  nats-accounts:
+    image: docker.io/library/nats:latest
+    container_name: nats-accounts
+    ports:
+      - "4226:4226"
+      - "8226:8226"  # HTTP monitoring
+    volumes:
+      - ./config/accounts.conf:/config/nats.conf:ro
+    command: ["-c", "/config/nats.conf", "-m", "8226"]
+    networks:
+      - nats-network
+
+networks:
+  nats-network:
+    driver: bridge
+
+# Podman-specific compose file with fully qualified image names
+# 
+# Usage with Podman:
+#   Start all servers: podman-compose up -d
+#   Start specific server: podman-compose up -d nats-basic
+#   Stop all servers: podman-compose down
+#   View logs: podman-compose logs -f nats-basic
+#   Monitor: curl http://localhost:8222/varz
+#
+# Note: This file uses docker.io/library/nats:latest to avoid
+# podman short-name resolution issues
