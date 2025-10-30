@@ -62,7 +62,18 @@ func main() {
 		fmt.Println("│     - Server: localhost:4226                               │")
 		fmt.Println("│     - Config: config/accounts.conf                         │")
 		fmt.Println("│                                                            │")
-		fmt.Println("│  8. Run All Demos                                          │")
+		fmt.Println("│  8. NKeys Authentication                                   │")
+		fmt.Println("│     - Ed25519 public-key signature authentication          │")
+		fmt.Println("│     - No passwords stored, only public keys                │")
+		fmt.Println("│     - Challenge-response verification                      │")
+		fmt.Println("│     - Server: localhost:4227                               │")
+		fmt.Println("│     - Config: config/nkeys-auth.conf                       │")
+		fmt.Println("│                                                            │")
+		fmt.Println("│  9. Generate NKeys                                         │")
+		fmt.Println("│     - Generate new NKey pairs for users                    │")
+		fmt.Println("│     - Demonstrates signature verification                  │")
+		fmt.Println("│                                                            │")
+		fmt.Println("│  10. Run All Demos                                         │")
 		fmt.Println("│                                                            │")
 		fmt.Println("│  0. Exit                                                   │")
 		fmt.Println("└────────────────────────────────────────────────────────────┘")
@@ -122,6 +133,34 @@ func main() {
 			examples.DemoNoAuthUser()
 
 		case "8":
+			fmt.Println("\n⚠️  Make sure NATS server is running with config/nkeys-auth.conf")
+			fmt.Println("   Command: nats-server -c config/nkeys-auth.conf")
+			fmt.Print("\nPress Enter to continue...")
+			reader.ReadString('\n')
+			examples.DemoNKeysAuth()
+
+		case "9":
+			fmt.Println("\n┌────────────────────────────────────────────────────────────┐")
+			fmt.Println("│ Choose NKey Generation Option:                             │")
+			fmt.Println("├────────────────────────────────────────────────────────────┤")
+			fmt.Println("│  a. Generate & Display NKeys (simple)                      │")
+			fmt.Println("│  b. Generate & Save to Files (with server config)         │")
+			fmt.Println("└────────────────────────────────────────────────────────────┘")
+			fmt.Print("\nEnter your choice (a/b): ")
+			subChoice, _ := reader.ReadString('\n')
+			subChoice = strings.TrimSpace(subChoice)
+			
+			switch subChoice {
+			case "a", "A":
+				examples.DemoNKeyGeneration()
+			case "b", "B":
+				examples.DemoNKeyGenerationWithFiles()
+			default:
+				fmt.Println("\n❌ Invalid choice. Running simple generation...")
+				examples.DemoNKeyGeneration()
+			}
+
+		case "10":
 			fmt.Println("\n⚠️  This will run all demos. Make sure you start each NATS server")
 			fmt.Println("   configuration as prompted.")
 			fmt.Print("\nPress Enter to continue...")
@@ -168,6 +207,19 @@ func main() {
 			examples.DemoAccounts()
 			examples.DemoAccountExports()
 			examples.DemoNoAuthUser()
+
+			fmt.Println("\n" + strings.Repeat("=", 64))
+			fmt.Println("Starting Demo 8: NKeys Authentication")
+			fmt.Println(strings.Repeat("=", 64))
+			fmt.Println("Start server: nats-server -c config/nkeys-auth.conf")
+			fmt.Print("Press Enter when ready...")
+			reader.ReadString('\n')
+			examples.DemoNKeysAuth()
+
+			fmt.Println("\n" + strings.Repeat("=", 64))
+			fmt.Println("Demo 9: Generate NKeys")
+			fmt.Println(strings.Repeat("=", 64))
+			examples.DemoNKeyGeneration()
 
 			fmt.Println("\n" + strings.Repeat("=", 64))
 			fmt.Println("All demos completed!")
